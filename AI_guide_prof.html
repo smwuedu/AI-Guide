@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>교수자용 생성형 AI 활용 가이드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@400;600;700;900&display=swap">
+<style>
+:root{--bg:#fff;--fg:#1e293b;--mut:#64748b;--card:#fff;--line:#e2e8f0;--soft:#f1f5f9;--ac:#4f46e5;--ac2:#4338ca;--acbg:#eef2ff;--hd:rgba(255,255,255,.88);--exb:#faf8ff;--exl:#a78bfa;--ext:#3b0764;--exp:#7c3aed;--info:#f0f9ff;--infol:#0ea5e9;--warn:#fffbeb;--warnl:#f59e0b;--hl:#fde68a;
+ --sans:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,-apple-system,sans-serif;--serif:"Noto Serif KR","Nanum Myeongjo",Batang,AppleMyungjo,serif;
+ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#020617;--fg:#e2e8f0;--mut:#94a3b8;--card:#0f172a;--line:#1e293b;--soft:#1e293b;--ac:#818cf8;--ac2:#c7d2fe;--acbg:rgba(99,102,241,.14);--hd:rgba(2,6,23,.88);--exb:rgba(124,58,237,.1);--exl:#6d5bd0;--ext:#ede9fe;--exp:#8b5cf6;--info:rgba(14,165,233,.1);--warn:rgba(245,158,11,.1);--hl:#854d0e}}
+:root[data-theme="dark"]{--bg:#020617;--fg:#e2e8f0;--mut:#94a3b8;--card:#0f172a;--line:#1e293b;--soft:#1e293b;--ac:#818cf8;--ac2:#c7d2fe;--acbg:rgba(99,102,241,.14);--hd:rgba(2,6,23,.88);--exb:rgba(124,58,237,.1);--exl:#6d5bd0;--ext:#ede9fe;--exp:#8b5cf6;--info:rgba(14,165,233,.1);--warn:rgba(245,158,11,.1);--hl:#854d0e;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(5rem + env(safe-area-inset-top,0px));-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 var(--sans);word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--hd);z-index:60}
+a{color:var(--ac);text-underline-offset:2px}
+h1,h2,h3,h4,.ser{font-family:var(--serif);letter-spacing:-.02em;line-height:1.45}
+button{font:inherit;color:inherit;cursor:pointer}
+#progress{position:fixed;top:env(safe-area-inset-top,0px);left:0;height:3px;width:0;background:var(--ac);z-index:70}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--hd);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.hin{max-width:80rem;margin:0 auto;height:3.5rem;display:flex;align-items:center;gap:.75rem;padding:0 1rem}
+.hin .ttl{font-weight:700;font-family:var(--serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:none}
+.hin .r{margin-left:auto;display:flex;gap:.5rem;align-items:center;min-width:0}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:.4rem .75rem;font-size:14px;font-weight:500;line-height:1.4}
+.btn:hover{background:var(--acbg)}
+#menuBtn{display:inline-flex;padding:.4rem .6rem}
+#q{width:8.5rem;min-width:0;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:8px;padding:.4rem .6rem;font:inherit;font-size:14px}
+#q:focus,.btn:focus-visible,.sh:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+#mtoc{display:none;max-height:70vh;overflow-y:auto;border-top:1px solid var(--line);padding:.75rem 1rem;background:var(--bg)}
+#mtoc.open{display:block}
+.wrap{max-width:80rem;margin:0 auto;padding:0 1rem;display:flex;gap:2.5rem}
+aside{display:none;width:18rem;flex-shrink:0}
+#toc{position:sticky;top:calc(4.5rem + env(safe-area-inset-top,0px));max-height:calc(100vh - 6rem);overflow-y:auto;padding-bottom:2.5rem}
+.tg{margin:.5rem 0;padding:0 .75rem;font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--mut)}
+.tl{display:block;border-radius:6px;padding:.3rem .75rem;font-size:14px;color:var(--mut);text-decoration:none;line-height:1.5}
+.tl:hover{background:var(--soft);color:var(--fg)}
+.tl.t0{font-family:var(--serif);font-weight:700;margin-top:.35rem}
+.tl.t1{padding-left:1.5rem;font-size:13px}.tl.t2{padding-left:2.25rem;font-size:13px}
+.tl.active{background:var(--acbg);color:var(--ac2);font-weight:700}
+main{min-width:0;flex:1;max-width:56rem;padding:1.5rem 0 3rem}
+.hero{margin-bottom:2rem;border-radius:16px;padding:2rem 1.25rem;color:#fff;background:linear-gradient(135deg,#4f46e5,#1d4ed8);box-shadow:0 8px 24px rgba(30,64,175,.2)}
+.hero h1{margin:0;font-size:1.65rem;font-weight:800}
+.chips{margin-top:1.25rem;display:flex;flex-wrap:wrap;gap:.5rem;font-size:14px}
+.chips a{color:#fff;text-decoration:none;background:rgba(255,255,255,.17);border-radius:99px;padding:.35rem .9rem}
+.chips a:hover{background:rgba(255,255,255,.28)}
+#toolbar{margin-bottom:1.5rem;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:.7rem 1rem;font-size:14px}
+#toolbar .lg{display:flex;align-items:center;gap:.5rem;color:var(--mut);width:100%}
+#searchNav{display:none;align-items:center;gap:.5rem;flex-wrap:wrap;width:100%}
+#searchNav.on{display:flex}
+#empty{display:none;margin-bottom:1.5rem;border:1px dashed var(--line);border-radius:12px;padding:2.5rem 1rem;text-align:center;color:var(--mut)}
+.sec{margin-bottom:3rem}
+.sec>h2{margin:0;font-size:1.2rem;font-weight:700;padding:0 0 .75rem;border-bottom:2px solid var(--acbg);position:relative;display:flex;align-items:center;justify-content:space-between;gap:.75rem;cursor:pointer;user-select:none}
+.sec>h2::after{content:"";position:absolute;left:0;bottom:-2px;height:2px;width:4rem;background:var(--ac);border-radius:2px}
+.sec>h2 .chev{width:1.2rem;height:1.2rem;flex-shrink:0;color:var(--mut);transition:transform .2s}
+.sec>h2[aria-expanded="false"] .chev{transform:rotate(-90deg)}
+.sec>h2:focus-visible{outline:2px solid var(--ac);outline-offset:4px;border-radius:4px}
+#a1>h2,#a2>h2,#a3>h2,#a4>h2,#a5>h2,#b1>h2{font-size:1.05rem}
+.sb{margin-top:1.25rem}.sb.hidden,.sec.hidden{display:none}
+.sb h3{margin:2.5rem 0 .75rem;font-size:1.15rem;font-weight:700;display:flex;gap:.5rem;align-items:center}
+.sb h3::before{content:"";flex-shrink:0;width:6px;height:1.2rem;border-radius:3px;background:var(--ac)}
+.sb h4{margin:1.75rem 0 .5rem;font-size:1.05rem;font-weight:700;color:var(--ac2)}
+.sb p{margin:.75rem 0;line-height:1.9}
+.tw{margin:1.25rem 0;overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:0 1px 2px rgba(0,0,0,.04)}
+table{width:100%;border-collapse:collapse;text-align:left;font-size:15px;line-height:1.7}
+th{padding:.7rem 1.1rem;font-size:12.5px;font-weight:700;color:var(--mut);background:var(--soft);border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:.9rem 1.1rem;vertical-align:top;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:var(--soft)}
+td.k{font-family:var(--serif);font-weight:700;color:var(--ac2);background:var(--acbg);width:25%;min-width:8rem}
+.ck{display:flex;gap:.5rem;padding:.15rem 0}.ck span:first-child{color:var(--mut)}
+.co{margin:1.25rem 0;border-left:4px solid;border-radius:0 12px 12px 0;padding:1rem 1.25rem;font-size:15px;line-height:1.8}
+.co b{display:block;margin-bottom:.35rem;font-family:var(--serif);font-size:14px}
+.co.info{background:var(--info);border-color:var(--infol)}.co.info b{color:#0369a1}
+.co.warn{background:var(--warn);border-color:var(--warnl)}.co.warn b{color:#b45309}
+:root[data-theme="dark"] .co.info b{color:#7dd3fc}:root[data-theme="dark"] .co.warn b{color:#fcd34d}
+.step{margin:.75rem 0;display:flex;gap:1rem;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:1.1rem;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.step:hover{border-color:var(--ac)}
+.sn{flex-shrink:0;width:2.6rem;height:2.6rem;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:8px;background:var(--ac);color:#fff;font-size:11px;font-weight:700;line-height:1.2}
+.step .t{font-family:var(--serif);font-weight:700;font-size:1.02rem}
+.step .d{margin-top:.25rem;font-size:15px;line-height:1.75;color:var(--fg)}
+.fc{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:1.1rem;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.fc .t{font-family:var(--serif);font-weight:700}.fc .d{margin-top:.25rem;font-size:15px;line-height:1.75}
+.ar{position:relative;height:2.1rem;font-size:0;line-height:0;overflow:hidden}
+.ar::before{content:"";position:absolute;left:50%;top:.15rem;width:6px;height:1rem;margin-left:-3px;background:var(--ac);border-radius:3px}
+.ar::after{content:"";position:absolute;left:50%;top:1.05rem;margin-left:-12px;border-style:solid;border-width:13px 12px 0;border-color:var(--ac) transparent transparent}
+.ex{position:relative;margin:1.25rem 0 .5rem;border:1.5px dashed var(--exl);background:var(--exb);border-radius:12px;padding:1rem 1.25rem}
+.exh{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:.6rem;flex-wrap:wrap}
+.exh .l{display:flex;gap:.5rem;align-items:center;font-family:var(--serif);font-weight:700;font-size:15px;color:var(--exp)}
+.xt{display:inline-block;font:700 11px/1.7 var(--sans);letter-spacing:.06em;color:#fff;background:var(--exp);border-radius:4px;padding:1px 8px;white-space:nowrap}
+.ct{font-size:15px;line-height:1.9;color:var(--ext)}
+.ex .ct p{margin:.35rem 0;line-height:1.9}
+.ex .ct::before,.ex .ct p::before{content:"“";color:var(--exl);font-weight:700;margin-right:2px}
+.ex .ct:has(p)::before{content:none}
+td.exc{background:rgba(124,58,237,.05);border-left:3px dashed var(--exl);color:var(--ext)}
+th.exth{color:var(--exp);border-left:3px dashed var(--exl);background:var(--exb)}
+th.exth::before{content:"예시";margin-right:6px;font-size:10px;color:#fff;background:var(--exp);border-radius:4px;padding:0 6px;line-height:1.6;display:inline-block}
+.cpr{display:flex;gap:.75rem;align-items:flex-start;justify-content:space-between}
+.cp{flex-shrink:0;border:1px solid var(--line);background:var(--card);border-radius:6px;padding:.15rem .6rem;font-size:12px;font-weight:500;color:var(--mut)}
+.cp:hover{background:var(--acbg);color:var(--ac2);border-color:var(--ac)}
+.xin{background:var(--exb);color:var(--exp);border-radius:4px;padding:0 4px}
+.note{margin:.25rem 0 1.25rem;padding:0 .25rem;font-size:14px;color:var(--mut)}
+.law{margin:1.25rem 0;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:1.25rem;font-family:var(--serif);font-size:14px;line-height:1.85}
+.law p{margin:.5rem 0}
+mark.hl{background:var(--hl);color:inherit;border-radius:3px;padding:0 1px}
+mark.hl.cur{outline:2px solid #f97316;outline-offset:1px}
+footer{margin-top:2rem;border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:1rem 1.25rem;font-size:14px}
+footer dl{margin:0;max-width:24rem}footer .row{display:flex;gap:1rem;padding:.5rem 0;border-bottom:1px solid var(--line)}footer .row:last-child{border:0}
+footer dt{width:6rem;flex-shrink:0;font-family:var(--serif);font-weight:700;color:var(--ac2)}footer dd{margin:0}
+#toTop{position:fixed;right:1.25rem;bottom:calc(1.25rem + env(safe-area-inset-bottom,0px));display:none;width:2.75rem;height:2.75rem;border:0;border-radius:50%;background:var(--ac);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.25);font-size:1.1rem}
+#toTop.on{display:block}
+#toast{position:fixed;left:50%;bottom:calc(1.5rem + env(safe-area-inset-bottom,0px));transform:translate(-50%,1rem);opacity:0;pointer-events:none;background:#0f172a;color:#fff;border-radius:8px;padding:.5rem 1rem;font-size:14px;transition:.25s;z-index:80}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+@media (max-width:639px){
+ .tw{overflow:visible}
+ table,tbody,tr,td{display:block;width:100%}
+ th{display:none}
+ tr{border-bottom:1px solid var(--line)}tr:last-child{border:0}
+ td{border:0;padding:.6rem 1rem}
+ td.k{width:100%;min-width:0;padding:.6rem 1rem}
+ td[data-l]::before{content:attr(data-l);display:block;font-size:12px;font-weight:700;color:var(--mut);margin-bottom:.15rem}
+ td.exc{border-left:3px dashed var(--exl)}
+ .cpr{flex-direction:column;gap:.5rem}
+}
+@media (min-width:640px){.hero{padding:3rem 2rem}.hero h1{font-size:2.2rem}#q{width:15rem}.hin .ttl{display:block}#toolbar .lg{width:auto}#searchNav{width:auto;margin-left:auto}}
+@media (min-width:1024px){aside{display:block}#menuBtn{display:none}#mtoc,#mtoc.open{display:none}.wrap{padding:0 1rem}main{padding-top:2.5rem}}
+@media print{header,aside,#toTop,#toolbar,#toast,#progress{display:none!important}.sb.hidden,.sec.hidden{display:block!important}.tw{overflow:visible}}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<header>
+ <div class="hin">
+  <button id="menuBtn" class="btn" type="button" aria-label="목차 열기" aria-expanded="false" aria-controls="mtoc"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <a href="#top" class="ttl" style="color:inherit;text-decoration:none">교수자용 생성형 AI 활용 가이드</a>
+  <div class="r">
+   <input id="q" type="search" autocomplete="off" placeholder="검색  ( / )" aria-label="가이드 내용 검색">
+   <button id="themeBtn" class="btn" type="button" aria-label="다크모드 전환"><span id="themeIcon" aria-hidden="true">🌙</span><span id="themeLbl" class="lb"> 다크모드</span></button>
+  </div>
+ </div>
+ <nav id="mtoc" aria-label="목차(모바일)"></nav>
+</header>
+<div class="wrap">
+ <aside><nav id="toc" aria-label="목차"></nav></aside>
+ <main id="top">
+  <div class="hero">
+   <h1>교수자용 생성형 AI 활용 가이드</h1>
+   <div class="chips"><a href="#part1">Ⅰ. 학생의 생성형 AI 활용 지도</a><a href="#part2">Ⅱ. 교수자의 생성형 AI 활용</a><a href="#a1">부록</a></div>
+  </div>
+  <div id="toolbar">
+   <span class="lg"><span class="xt">예시</span><span>점선·보라색 표시는 예시문입니다</span></span>
+   <button id="expandAll" class="btn" type="button">모두 펼치기</button>
+   <button id="collapseAll" class="btn" type="button">모두 접기</button>
+   <div id="searchNav"><span id="info" aria-live="polite"></span>
+    <button id="prevHit" class="btn" type="button" aria-label="이전 결과">↑</button>
+    <button id="nextHit" class="btn" type="button" aria-label="다음 결과">↓</button>
+    <button id="clearQ" class="btn" type="button">초기화</button></div>
+  </div>
+  <div id="empty">검색 결과가 없습니다.</div>
+
+<section id="intro" class="sec"><h2>▣ 목적과 적용 범위</h2><div class="sb">
+<p>본 가이드는 교수자가 교과목의 학습목표와 특성에 따라 생성형 AI의 활용 여부와 영역·범위를 결정하고, 교수자와 학생이 AI를 책임 있게 활용하도록 지원하는 데 목적이 있다. ‘학생의 생성형 AI 활용 지도와 교수자의 생성형 AI 활용’으로 구분하여 제시하였다.</p>
+<div class="tw"><table><thead><tr><th>구분</th><th>주요 내용</th></tr></thead><tbody>
+<tr><td class="k">Ⅰ. 학생의 생성형 AI 활용 지도</td><td>학생의 AI 활용 범위 설정, 지침 작성 및 안내</td></tr>
+<tr><td class="k">Ⅱ. 교수자의 생성형 AI 활용</td><td>교수자의 AI 활용 원칙, 교수자의 수업 준비 및 운영을 위한 AI 활용 방법, AI 활용 과제의 평가와 피드백</td></tr></tbody></table></div>
+<p>본 가이드는 학부 및 대학원 교과목 담당 교수자의 수업 준비 및 운영과 학생의 학습활동·평가에 적용한다. 다만, 생성 결과에는 오류, 편향, 허위 정보가 포함될 수 있으며, 학생의 사고과정 생략, 평가의 공정성 저하, 개인정보 및 저작권 침해 등의 문제가 발생할 수 있다.</p>
+<div class="co info"><b>ℹ️ 참고</b>※ 본문과 부록의 사례와 서식은 교과목의 학습목표와 수업 상황에 맞게 조정하여 사용할 수 있다. 학업윤리, 평가 및 개인정보 보호 등에 관한 사항은 우리 대학의 관련 규정과 지침에 따른다.</div>
+</div></section>
+
+<section id="principle" class="sec"><h2>▣ 생성형 AI 활용의 공통 원칙</h2><div class="sb">
+<p>우리 대학은 「인공지능 개발 및 활용에 관한 행동강령」에서 인권보장, 독립성, 주도성, 공공성, 다양성, 포용성, 책무성, 독창성, 형평성 및 안전성을 AI 개발 및 활용의 핵심요건으로 제시하고 있다(<a href="#b1">붙임1 참조</a>). 본 가이드는 이러한 원칙을 바탕으로 작성되었으며, 교수자와 학생은 생성형 AI를 활용할 때 다음 사항을 준수한다.</p>
+<div class="tw"><table><thead><tr><th>원칙</th><th>주요 내용</th></tr></thead><tbody>
+<tr><td class="k">사고와 판단의 주도성</td><td>AI를 학습과 수업 운영을 지원하는 도구로 활용하며, 필요한 사고와 판단을 AI에 맡기지 않는다.</td></tr>
+<tr><td class="k">AI 결과의 검토와 최종 책임</td><td>AI가 제시한 내용의 정확성과 적절성, 근거 및 출처의 신뢰성을 확인하고 필요한 경우 수정한다. 최종 판단과 결과에 대한 책임은 AI를 활용한 사람에게 있다.</td></tr>
+<tr><td class="k">개인정보 및 보호자료의 안전한 관리</td><td>학생의 개인정보, 성적, 상담 내용, 식별 가능한 과제물, 비공개 시험문항·정답·평가자료 등은 외부 AI 도구에 입력하거나 업로드하지 않는다. 입력 자료의 공개 여부와 저작권도 확인한다.</td></tr></tbody></table></div>
+</div></section>
+
+<section id="part1" class="sec"><h2>Ⅰ. 학생의 생성형 AI 활용 지도</h2><div class="sb">
+<p>본 장에서는 1) 학생의 AI 활용 여부 결정, 2) AI 활용 영역 및 범위 설정, 3) AI 활용 지침 작성 및 안내 등 교수자가 학생의 AI 활용을 지도할 때 참고할 사항을 제시한다.</p>
+<h3 id="quick">[학생의 AI 활용 지도 QUICK 가이드]</h3>
+<p>생성형 AI 활용 관련 사항은 교과목의 학습목표와 특성을 고려하여 교수자가 결정한다.</p>
+<div class="step"><div class="sn">STEP<br>01</div><div><div class="t">AI 활용 여부 결정</div><div class="d">학생의 생성형 AI 활용 여부를 ‘사용’ 또는 ‘금지’ 중 하나로 결정한다.<br><a href="#s11">본문 1.1 p.3</a></div></div></div>
+<div class="step"><div class="sn">STEP<br>02</div><div><div class="t">AI 활용 영역 및 범위 설정</div><div class="d">‘사용’을 선택한 경우 수업 중 활동, 과제, 시험, 실습, 기타 중 활용 영역을 정하고, AI를 활용할 수 있는 범위와 학생이 직접 수행해야 할 부분을 구분한다.<br><a href="#s12">본문 1.2 p.3-4</a></div></div></div>
+<div class="step"><div class="sn">STEP<br>03</div><div><div class="t">AI 활용 지침 작성 및 안내</div><div class="d">강의계획서에 AI 활용 지침을 작성하고 학생에게 안내한다. 필요한 경우 과제 또는 활동별 AI 활용 지침을 추가로 제시한다.<br><a href="#s21">본문 2.1~2.3 p.4-5</a></div></div></div>
+<div class="co warn"><b>⚠️ 주의사항</b>※ ‘사용’은 생성형 AI 활용을 의무화한다는 의미가 아니라, 교수자가 정한 영역과 범위 내에서 활용할 수 있음을 의미한다.<br>※ 수업 단계별 점검 사항은 <a href="#a1">[부록1] ‘수업 준비 및 운영 단계별 체크리스트’</a>를 참고한다.</div>
+
+<h3 id="s1">1. 학생의 AI 활용 여부와 영역·범위 설정</h3>
+<h4 id="s11">1.1 AI 활용 여부 결정</h4>
+<p>교수자는 교과목의 학습목표, 수업내용, 수업방법·학습활동, 평가 특성을 고려하여 AI 활용 여부를 결정해야 한다. 이 과정에서 다음의 사항을 참고하여 학생의 AI 활용 여부를 검토한다.</p>
+<div class="tw"><table><thead><tr><th>검토 사항</th><th>검토 내용</th></tr></thead><tbody>
+<tr><td class="k">AI 활용이 학습목표 달성에 도움이 되는가?</td><td>AI가 학습내용 이해, 반복학습, 문제해결을 지원할 수 있다면 ‘사용’을 고려한다.</td></tr>
+<tr><td class="k">AI가 학생이 직접 수행해야 할 분석, 판단, 작성 또는 실습을 대신하는가?</td><td>핵심 학습과정을 대체할 우려가 크고, 통제하기 어렵다면 ‘금지’를 고려한다.</td></tr>
+<tr><td class="k">개인정보나 비공개 자료를 활용하는가?</td><td>보호가 필요한 자료를 안전하게 처리하기 어려운 경우 해당 활동에서 AI 활용을 허용하지 않는다.</td></tr></tbody></table></div>
+<p>검토 결과에 따라 학생의 생성형 AI 활용 여부를 ‘사용’ 또는 ‘금지’ 중 하나로 결정한다.</p>
+<div class="tw"><table><thead><tr><th>구분</th><th>의미 및 안내사항</th></tr></thead><tbody>
+<tr><td class="k">사용</td><td>교수자가 정한 영역과 범위에 따라 AI 활용을 허용한다는 의미이며, 구체적인 활용 영역·범위와 준수사항을 학생에게 안내한다.</td></tr>
+<tr><td class="k">금지</td><td>해당 교과목에서 학생의 생성형 AI 사용을 허용하지 않는다. 금지의 취지와 학생이 직접 수행해야 하는 학습과정, 필요한 세부사항을 안내한다.</td></tr></tbody></table></div>
+<p>강의계획서의 ‘사용’ 또는 ‘금지’는 학생의 AI 활용에 관한 기준이며, 교수자의 수업준비 및 운영 과정에서의 생성형 AI 활용은 <a href="#part2">「Ⅱ. 교수자의 생성형 AI 활용」</a>을 참고한다.</p>
+
+<h4 id="s12">1.2 AI 활용 영역 및 범위 결정</h4>
+<p>‘사용’을 선택한 경우에는 수업 중 활동, 과제, 시험, 실습, 기타 중 생성형 AI 활용 영역을 정한다. 각 영역에서 AI를 사용할 수 있는 범위, 학생이 직접 수행해야 할 부분을 구체적으로 정한다.</p>
+<div class="tw"><table><thead><tr><th>선택</th><th>활용 여부</th><th>활용 영역</th></tr></thead><tbody>
+<tr><td data-l="선택">□</td><td data-l="활용 여부">사용</td><td data-l="활용 영역">□ 수업 중 활동 &nbsp;□ 과제 &nbsp;□ 시험 &nbsp;□ 실습 &nbsp;□ 기타</td></tr>
+<tr><td data-l="선택">□</td><td data-l="활용 여부">금지</td><td data-l="활용 영역">해당 교과목에서 생성형 AI 사용을 허용하지 않음</td></tr></tbody></table></div>
+<p>활용 영역 중 ‘수업 중 활동’에서는 학습내용에 대한 질문과 답변, 개념 및 사례 탐색, 토론을 위한 아이디어 도출, 문제 해결 및 의견 정리 등에 생성형 AI를 활용할 수 있다.</p>
+<p>이때 AI를 활용하더라도 학생의 이해와 판단, 실제 수행을 확인할 수 있도록 학습목표와 평가방법을 함께 고려한다.</p>
+<p>AI 활용을 위해서 스노우챗 등 교내에서 지원하는 환경과 이용 방법을 사전에 안내한다.</p>
+
+<h3 id="s2">2. AI 활용 지침 수립 및 운영</h3>
+<p>교수자는 AI 활용 여부와 영역 및 범위를 강의계획서에 명시한다. 과제나 활동별로 활용 범위 또는 제출 방법이 다른 경우에는 과제 또는 활동 안내 시 AI 활용 지침을 구체적으로 제시한다.</p>
+<h4 id="s21">2.1 강의계획서의 AI 활용 지침 항목</h4>
+<p>강의계획서에서 생성형 AI 활용 여부를 선택한 후, AI 활용 지침을 작성할 때 다음 항목을 참고할 수 있다.</p>
+<div class="tw"><table><thead><tr><th>안내 항목</th><th>주요 안내 내용</th></tr></thead><tbody>
+<tr><td class="k">활용 영역·범위</td><td>수업 중 활동, 과제, 시험, 실습, 기타 중 생성형 AI를 사용할 수 있는 영역과 범위, 학생이 직접 수행해야 할 부분</td></tr>
+<tr><td class="k">AI 활용 보고서 작성</td><td>사용 도구, 목적, 활용 범위, 주요 프롬프트 등 필요한 항목과 제출 방법</td></tr>
+<tr><td class="k">출처 및 인용</td><td>AI가 제시한 자료의 원출처 확인 및 인용 방법</td></tr>
+<tr><td class="k">평가 관련 사항 (해당 시)</td><td>AI 활용 결과물의 평가기준 및 학생이 직접 수행한 부분의 평가방법 안내</td></tr>
+<tr><td class="k">기준 위반 처리</td><td>활용 내역 누락, 허용 범위 초과 등이 의심되는 경우의 확인 절차와 처리 기준</td></tr></tbody></table></div>
+<div class="co info"><b>ℹ️ 참고</b>※ 강의계획서의 생성형 AI 활용 지침 작성 예시는 <a href="#a2">[부록2]</a>를 참고한다.</div>
+
+<h4 id="s22">2.2 AI 활용 지침 작성 및 안내</h4>
+<p>학기 초에 학생에게 AI 활용 지침을 명확히 안내하고, 변경 사항이 있는 경우 사전에 알리며, 학기 전반에 걸쳐 일관되게 적용한다.</p>
+<div class="tw"><table><thead><tr><th>구분</th><th>주요 내용</th></tr></thead><tbody>
+<tr><td class="k">지침 안내</td><td>학기 초에 AI 활용 지침을 구체적인 사례로 설명하고, 학생이 질문할 기회를 제공한다.</td></tr>
+<tr><td class="k">변경사항 안내</td><td>AI 활용 지침을 변경하는 경우 이유, 내용, 적용 시점을 사전에 안내하고 관련 안내를 갱신한다. 학생의 과제 준비와 수행 상황을 고려하여 혼란이나 불이익이 발생하지 않도록 한다.</td></tr>
+<tr><td class="k">지침 공유 및 일관된 적용</td><td>팀티칭, 분반, 조교 참여 수업에서는 AI 활용 범위, 제출 방식 및 위반 의심 시 확인 절차를 사전에 공유하고 일관되게 적용한다. 분반별 지침이 다른 경우에는 학생에게 사전에 안내한다.</td></tr></tbody></table></div>
+
+<h4 id="s23">2.3 AI 활용 보고서 제출 안내</h4>
+<p>교수자는 과제 특성에 따라 AI 활용 보고서의 제출 여부를 결정하고, 필요한 경우 아래 표에서 작성 항목을 선택하여 학생에게 안내한다. 학생이 작성한 AI 활용 내역과 본인 기여 내용을 확인하도록 AI 활용 보고서에 확인란 또는 서명란을 둘 수 있다.</p>
+<div class="tw"><table><thead><tr><th>항목</th><th>작성 내용</th></tr></thead><tbody>
+<tr><td class="k">활용 도구</td><td>AI 도구명, 모델명과 버전은 확인 가능한 경우 기록</td></tr>
+<tr><td class="k">활용 목적</td><td>아이디어 탐색, 문장 교정, 코드 오류 점검, 초안에 대한 피드백 요청</td></tr>
+<tr><td class="k">활용 단계 및 범위</td><td>과제의 어느 단계와 어느 부분에 사용했는지</td></tr>
+<tr><td class="k">주요 프롬프트</td><td>주요 질문, 요청 내용 요약</td></tr>
+<tr><td class="k">검토 및 수정 내용</td><td>AI 결과 중 채택 및 수정한 내용과 이유</td></tr>
+<tr><td class="k">본인의 기여</td><td>학생이 직접 수행한 분석, 판단 및 작성 내용</td></tr></tbody></table></div>
+<div class="co info"><b>ℹ️ 참고</b>※ AI 활용 보고서 작성 예시는 <a href="#a3">[부록3]</a>을 참고한다.</div>
+</div></section>
+
+<section id="part2" class="sec"><h2>Ⅱ. 교수자의 생성형 AI 활용</h2><div class="sb">
+<p>본 장에서는 교수자가 설명자료 개발, 학습활동 설계, 평가문항 개발, 피드백 초안작성에 생성형 AI를 활용하는 방법과 검토 사항을 제시한다.</p>
+<h3 id="t1">1. 교수자의 AI 활용 원칙</h3>
+<p>교수자는 설명자료 개발, 학습활동 설계, 퀴즈·평가문항 개발, 피드백 초안 작성 등에 생성형 AI를 활용할 수 있다. 이때 「숙명여자대학교 인공지능 개발 및 활용에 관한 행동강령」의 독립성, 주도성, 책무성 등의 취지를 바탕으로 AI 생성 결과를 직접 검토하고 필요한 부분을 수정하여 활용한다.</p>
+<p>AI가 생성한 설명자료와 학습활동은 내용의 정확성과 출처, 학습목표 및 학생 수준과의 적합성을 확인한다. 퀴즈·평가문항 개발 및 피드백 초안 작성 시 AI가 제시한 내용에 오류나 근거 없는 내용이 포함되지 않았는지 검토하고, 평가 목적에 맞게 수정한다.</p>
+<p>AI를 활용하여 작성한 설명자료, 학습활동, 평가문항 및 피드백 등에 대한 최종 판단과 책임은 교수자에게 있으며, AI에 자료를 입력할 때에는 본 가이드의 「생성형 AI 활용의 공통 원칙」에 제시된 개인정보 및 보호자료 관리에 관한 사항을 준수한다.</p>
+
+<h3 id="t2">2. 수업 준비 및 운영을 위한 AI 활용 방법</h3>
+<p>다음은 수업 준비 및 운영에서 AI를 활용할 수 있는 방법과 프롬프트 예시이다.</p>
+<div class="ex"><div class="exh"><div class="l"><span class="xt">예시</span>공통 프롬프트 예시:</div><button class="cp" type="button">복사</button></div>
+<div class="ct">이 수업의 학습목표는 [     ]이고, 수업 특성은 [     ]이야. 학습 대상은 [학년, 전공 등]이야. 다음 요청에 맞게 내용을 작성해 줘.</div></div>
+<p class="note">※ [ ] 안의 내용은 교과목에 맞게 입력하며, 필요하지 않은 항목은 생략할 수 있다.</p>
+<div class="tw"><table><thead><tr><th>활용 목적</th><th>활용 방법</th><th class="exth">프롬프트 예시</th></tr></thead><tbody>
+<tr><td class="k">설명자료 개발</td><td data-l="활용 방법">개념 설명, 사례, 연습문제 및 보충자료 초안 작성</td><td class="exc" data-l="프롬프트 예시"><div class="cpr"><div class="ct">개념을 쉽게 설명하고, 관련 사례 2개와 이해도를 확인할 질문 2개를 만들어 줘.</div><button class="cp" type="button">복사</button></div></td></tr>
+<tr><td class="k">학습활동 설계</td><td data-l="활용 방법">학습목표에 맞는 활동 아이디어 및 수업 진행 방법 탐색</td><td class="exc" data-l="프롬프트 예시"><div class="cpr"><div class="ct">학습목표에 맞는 활동 아이디어 3가지를 제안해 줘. 각 활동은 50명 규모의 수업에서 20분 내에 진행할 수 있도록 구성해 줘.</div><button class="cp" type="button">복사</button></div></td></tr>
+<tr><td class="k">퀴즈·평가문항 개발</td><td data-l="활용 방법">퀴즈, 평가문항 초안 생성 및 문항의 난이도와 표현 점검</td><td class="exc" data-l="프롬프트 예시"><div class="cpr"><div class="ct">평가 범위에 대해 이해와 적용 능력을 확인할 수 있는 문항 3개를 제안해 줘. 각 문항의 난이도와 정답, 해설도 함께 작성해 줘.</div><button class="cp" type="button">복사</button></div></td></tr>
+<tr><td class="k">피드백 초안 작성</td><td data-l="활용 방법">학생의 과제 및 학습활동에 대한 강점과 보완할 점, 개선 방향을 제시하는 피드백 문장 초안 작성</td><td class="exc" data-l="프롬프트 예시"><div class="cpr"><div class="ct">과제 [      ]에 대해 학생에게 제공할 수 있는 피드백 문장 예시 3개를 작성해 줘. 각 예시에는 잘한 점과 보완할 점, 구체적인 개선 방향을 포함해 줘.</div><button class="cp" type="button">복사</button></div></td></tr></tbody></table></div>
+<div class="co info"><b>ℹ️ 참고</b>※ 수업 준비 및 운영 과정에서의 다양한 생성형 AI 활용 방법은 <a href="#a4">[부록4]</a>를 참고한다.</div>
+
+<h3 id="t3">3. 학생의 AI 활용 과제 평가와 피드백</h3>
+<p>AI 활용을 허용한 과제에서는 최종 결과물과 함께 학생의 과제 내용에 대한 이해도와 수행 과정도 필요에 따라 확인한다. 과제의 특성과 수강 인원, 평가 부담을 고려하여 적절한 평가 및 피드백 방법을 선택하여 활용한다.</p>
+<h4 id="t31">3.1 학생의 AI 활용 과제 평가 시 고려사항</h4>
+<p>생성형 AI 활용 과제는 학생의 이해와 판단, 수행 과정을 확인하는 데 중점을 둔다. 교수자는 평가 항목과 배점, 제출해야 할 자료를 사전에 안내하고, 최종 결과물만으로 학습성과를 확인하기 어려운 경우에는 초안 및 작성 과정 확인, 짧은 구두 설명 요구, 추가 질문 등을 활용할 수 있다. 다만, 전체 대화 기록이나 편집 이력을 일률적으로 요구하지 않는다.</p>
+<p>다음은 AI 활용 과제의 평가 및 피드백 방법으로, 과제 특성과 수강 인원 등을 고려하여 필요한 방법을 선택하여 활용할 수 있다.</p>
+<div class="tw"><table><thead><tr><th>운영 방법</th><th>주요 내용</th></tr></thead><tbody>
+<tr><td class="k">수행 자료 추가 확인</td><td>최종 결과물만으로 학생의 이해나 수행과정을 확인하기 어려운 경우 과제 초안이나 수정 내역 등을 추가로 확인한다.</td></tr>
+<tr><td class="k">질문을 통한 추가 확인</td><td>과제 수행과정에서 추가 확인이 필요한 부분에 대해 <span class="xin">‘이 자료를 활용한 이유는 무엇인가요?’</span>, <span class="xin">‘AI가 제안한 내용 중 수정한 부분은 무엇인가요?’</span>와 같은 짧은 질문을 제시한다.</td></tr>
+<tr><td class="k">팀 활동의 개인 이해 확인</td><td>팀 발표 후 필요한 경우 AI 활용 과정이나 과제의 핵심 내용에 관한 질문을 제시하여 개인의 이해 정도를 확인한다.</td></tr>
+<tr><td class="k">공통 피드백 제공</td><td>여러 학생에게 공통으로 나타나는 오류나 보완이 필요한 사항을 정리하여 수업시간이나 스노우보드를 통해 전체 학생에게 안내한다.</td></tr>
+<tr><td class="k">개별 피드백 제공</td><td>학생별 주요 강점과 우선적으로 보완할 사항을 중심으로 피드백을 제공한다.</td></tr></tbody></table></div>
+<div class="co info"><b>ℹ️ 참고</b>※ AI 활용 과제의 피드백 문장 예시는 <a href="#a5">[부록5]</a>를 참고한다.</div>
+
+<h4 id="t32">3.2 AI 활용 지침 위반 의심 시 확인 절차</h4>
+<p>AI 활용 지침을 위반한 것으로 의심되는 경우, 관련 자료와 학생의 소명을 바탕으로 사실관계를 확인한다. 지침 위반이 확인되면 「학칙시행세칙」 제47조에 따라 부정행위로 처리될 수 있다.</p>
+<div class="fc"><div class="t">지침 및 자료 확인</div><div class="d">사전에 안내한 허용 범위와 활용 내역 작성 기준, 제출 자료를 확인한다. 생성형 AI 탐지 도구(GPT Killer)의 결과만으로 지침 위반 여부를 결정하지 않는다.</div></div>
+<div class="ar" aria-hidden="true">↓</div>
+<div class="fc"><div class="t">학생 소명 확인</div><div class="d">학생에게 확인이 필요한 내용과 근거를 알리고, 소명 및 자료 제출 기회를 제공한다. 확인 과정과 학생의 소명은 필요한 범위에서 기록한다.</div></div>
+<div class="ar" aria-hidden="true">↓</div>
+<div class="fc"><div class="t">위반 여부 종합 검토</div><div class="d">제출 자료와 학생의 소명을 종합하여 AI 활용 지침 위반 여부를 검토한다.</div></div>
+</div></section>
+
+<section id="a1" class="sec"><h2>[부록1] 수업 준비 및 운영 단계별 체크리스트</h2><div class="sb">
+<div class="tw"><table><thead><tr><th>단계</th><th>단계별 체크리스트 항목</th></tr></thead><tbody>
+<tr><td class="k">수업 전</td><td>
+<div class="ck"><span>☐</span><span>학습목표와 교과목 특성에 따라 생성형 AI 활용의 필요성을 검토했는가?</span></div>
+<div class="ck"><span>☐</span><span>강의계획서에서 학생의 AI 활용 여부를 ‘사용’ 또는 ‘금지’로 설정했는가?</span></div>
+<div class="ck"><span>☐</span><span>‘사용’을 선택한 경우, AI 활용 영역과 범위를 정했는가?</span></div>
+<div class="ck"><span>☐</span><span>강의계획서에 AI 활용 지침을 작성했는가?</span></div>
+<div class="ck"><span>☐</span><span>AI 활용 보고서 제출 여부를 정하고, 필요한 경우 작성 항목을 선택했는가?</span></div></td></tr>
+<tr><td class="k">수업 중</td><td>
+<div class="ck"><span>☐</span><span>학기 초에 AI 활용 지침을 학생에게 명확하게 안내했는가?</span></div>
+<div class="ck"><span>☐</span><span>팀티칭, 분반, 조교 참여 수업에서 AI 활용 지침을 사전에 공유했는가?</span></div>
+<div class="ck"><span>☐</span><span>AI 활용 지침을 변경한 경우 변경 이유와 내용, 적용 시점을 안내했는가?</span></div>
+<div class="ck"><span>☐</span><span>AI 활용 시 오류, 편향, 개인정보 및 저작권 관련 유의사항을 안내했는가?</span></div></td></tr>
+<tr><td class="k">평가 및 피드백</td><td>
+<div class="ck"><span>☐</span><span>AI를 활용하여 작성한 평가문항이나 피드백 초안을 교수자가 직접 검토했는가?</span></div>
+<div class="ck"><span>☐</span><span>생성형 AI 탐지 도구(GPT Killer)를 사용한 경우, 탐지 결과를 다른 자료와 함께 검토했는가?</span></div>
+<div class="ck"><span>☐</span><span>필요한 경우 학생의 수행 자료를 추가로 확인했는가?</span></div>
+<div class="ck"><span>☐</span><span>AI 활용 지침 위반이 의심되는 경우, 학생에게 소명과 자료 제출 기회를 제공했는가?</span></div></td></tr></tbody></table></div>
+</div></section>
+
+<section id="a2" class="sec"><h2>[부록2] 강의계획서의 생성형 AI 활용 지침 작성 예시</h2><div class="sb">
+<div class="ex"><div class="exh"><div class="l"><span class="xt">예시</span>작성 예시1. 과제</div><button class="cp" type="button">복사</button></div><div class="ct"><p>기말 과제 수행 시 생성형 AI를 활용한 주제 및 자료 탐색, 문장 표현 점검을 허용합니다.</p><p>핵심 내용의 분석과 최종 결론은 학생이 직접 작성해야 합니다.</p><p>AI가 제시한 자료는 원출처를 확인하고, 활용한 자료의 출처를 표기합니다.</p><p>과제 제출 시 사용한 AI 도구명, 활용 목적 및 범위를 작성하여 함께 제출해야 합니다.</p><p>강의계획서에 명시된 지침 또는 담당 교수자가 별도로 제시한 지침을 준수하지 않은 경우, 「학칙시행세칙」 제47조에 따라 부정행위로 처리될 수 있습니다.</p></div></div>
+<div class="ex"><div class="exh"><div class="l"><span class="xt">예시</span>작성 예시2. 수업 중 활동</div><button class="cp" type="button">복사</button></div><div class="ct"><p>수업 중 토론 주제에 대한 다양한 관점과 아이디어 탐색에 생성형 AI 활용을 허용합니다.</p><p>AI가 제시한 의견을 팀원들과 비교·검토하고, 토론을 통해 팀의 최종 의견을 도출합니다.</p><p>토론 결과 공유 시 사용한 AI 도구명과 활용 내용을 간단히 설명해야 합니다.</p><p>강의계획서에 명시된 지침 또는 담당 교수자가 별도로 제시한 지침을 준수하지 않은 경우, 「학칙시행세칙」 제47조에 따라 부정행위로 처리될 수 있습니다.</p></div></div>
+<div class="ex"><div class="exh"><div class="l"><span class="xt">예시</span>생성형 AI 활용을 금지할 경우</div><button class="cp" type="button">복사</button></div><div class="ct"><p>본 교과목에서는 학습목표 및 내용을 고려했을 때 생성형 AI 사용을 금지합니다.</p><p>이를 위반한 경우, 「학칙시행세칙」 제47조에 따라 부정행위로 처리될 수 있습니다.</p></div></div>
+</div></section>
+
+<section id="a3" class="sec"><h2>[부록3] AI 활용 보고서 작성 예시</h2><div class="sb">
+<div class="tw"><table><thead><tr><th>항목</th><th>학생 작성 예시</th></tr></thead><tbody>
+<tr><td class="k">활용 도구</td><td>ChatGPT</td></tr>
+<tr><td class="k">활용 목적</td><td>보고서 목차 구성 및 최종 문장 표현 점검</td></tr>
+<tr><td class="k">활용 단계 및 범위</td><td>자료조사 후 목차 구성 단계, 최종 문장 수정 단계</td></tr>
+<tr><td class="k">주요 프롬프트 <span class="xt" style="margin-left:6px;vertical-align:middle">예시</span></td><td class="exc"><div class="cpr"><div class="ct">- 조사한 내용을 바탕으로 보고서 목차의 구성과 흐름 점검해 줘<br>- 최종 보고서 문장의 오탈자와 비문을 점검해 줘</div><button class="cp" type="button">복사</button></div></td></tr>
+<tr><td class="k">검토 및 수정 내용</td><td>- AI가 제안한 목차 중 중복 항목을 통합함<br>- 오탈자, 비문을 수정함</td></tr>
+<tr><td class="k">본인의 기여</td><td>자료조사, 통계분석, 결론 작성</td></tr></tbody></table></div>
+</div></section>
+
+<section id="a4" class="sec"><h2>[부록4] 교수자의 생성형 AI 활용 방법</h2><div class="sb">
+<p>다음은 수업 준비 및 운영 과정에서 활용할 수 있는 생성형 AI 활용 방법으로, 수업 목적과 상황에 따라 선택하여 활용할 수 있다.</p>
+<div class="tw"><table><thead><tr><th>활용 영역</th><th>생성형 AI 활용 방법</th></tr></thead><tbody>
+<tr><td class="k">수업활동 설계 및 자료개발</td><td>학습목표에 적합한 학습활동 아이디어 탐색<br>핵심 개념을 설명하기 위한 사례 초안 작성<br>수업에서 활용할 질문 및 활동자료 초안 작성<br>기사, 보고서, 논문 등의 핵심 내용 요약<br>설명자료의 구성, 표현 및 가독성 점검</td></tr>
+<tr><td class="k">학생 이해도 확인 및 보충자료 개발</td><td>사전학습 수준을 확인하기 위한 진단 문항 초안 작성<br>핵심 개념에 대한 학생의 오개념 및 오류 사례 생성<br>이해하기 어려운 개념에 대한 다양한 설명 방식 제안<br>학생 이해 수준별 보충 문제 및 해설 초안 작성<br>수업 중 학습내용의 이해도를 확인하기 위한 퀴즈 및 질문 초안 작성</td></tr>
+<tr><td class="k">토론 활동</td><td>토론 주제에 대한 다양한 관점 탐색<br>토론 주제에 대한 찬반 주장과 근거 초안 생성<br>토론 과정에서 활용할 예상 반론 및 후속 질문 생성</td></tr>
+<tr><td class="k">문제해결 활동</td><td>실제 상황을 반영한 문제상황 및 사례 초안 작성<br>학생의 문제 분석과 해결 방안 탐색을 유도하는 질문 생성<br>해결 방안의 타당성과 실행 가능성을 검토하기 위한 점검 항목 작성</td></tr>
+<tr><td class="k">글쓰기 및 발표 지도</td><td>글의 구성과 논리적 흐름에 대한 검토 의견 초안 작성<br>주장과 근거의 적절성 및 논리적 오류 점검<br>불명확한 표현 점검 및 수정 예시 작성<br>학생 발표 후 질의응답에 활용할 질문 초안 작성</td></tr>
+<tr><td class="k">평가 및 피드백</td><td>교수자가 설정한 평가항목과 배점을 바탕으로 평가기준(루브릭) 초안 작성<br>수행 수준별 평가기준(루브릭)의 모호성 점검<br>학생의 강점과 보완할 점을 바탕으로 피드백 문장 초안 작성</td></tr></tbody></table></div>
+</div></section>
+
+<section id="a5" class="sec"><h2>[부록5] AI 활용 과제의 피드백 문장 예시</h2><div class="sb">
+<div class="tw"><table><thead><tr><th>피드백 초점</th><th class="exth">피드백 문장 예시</th></tr></thead><tbody>
+<tr><td class="k">결과 검증</td><td class="exc">인용한 통계의 원출처가 확인되지 않았습니다. 통계의 출처와 수치를 검토하여 필요한 부분을 수정하거나, 근거가 불분명한 통계는 제외해 주세요.</td></tr>
+<tr><td class="k">근거 보완</td><td class="exc">AI가 제안한 내용을 반영한 이유가 충분히 드러나지 않았습니다. 수업에서 다룬 개념이나 과제 수행 과정에서 참고한 자료를 근거로 해당 내용을 선택한 이유를 구체적으로 설명해 주세요.</td></tr>
+<tr><td class="k">AI 활용 보고서 작성</td><td class="exc">AI를 활용한 부분과 활용 목적이 명확하게 표시되지 않았습니다. 어떤 부분에 어느 정도로 AI를 활용했는지와 활용 목적을 안내된 방식에 따라 작성해 주세요.</td></tr></tbody></table></div>
+</div></section>
+
+<section id="b1" class="sec"><h2>[붙임1] 「숙명여자대학교 인공지능 개발 및 활용에 관한 행동강령」 중 제3조 및 제5조</h2><div class="sb"><div class="law">
+<p><b>제3조(원칙과 핵심요건)</b></p>
+<p>① AI는 대학의 교육목표 실현 범위 내에서 인간의 존엄과 가치가 공고히 될 수 있도록 다음 각 호의 사항을 준수해 개발 및 활용되어야 한다.</p>
+<p>1. 인권보장 (HumanRights) : 인권을 보장하고 인간의 존엄성과 가치를 최우선 고려하며 자유와 권리를 침해하지 않는다.<br>2. 독립성 (Independence) : 기술과 기계의 영향과 간섭없이 스스로 사고 및 판단하고 책임지는 능력과 태도를 함양한다.<br>3. 주도성 (Initiative) : 스스로의 생각과 목적을 명확히 하고 주도적으로 AI를 활용하는 실천적 성향을 유지한다.</p>
+<p>② AI는 국가와 인류 사회 발전에 필요한 학술 이론과 응용 방법을 가르치고 연구하며, 사회에 기여할 인재를 양성할 수 있도록 다음 각 호의 사항을 준수해 개발 및 활용되어야 한다.</p>
+<p>1. 공공성 (Publicness) : 대학의 교육목표와 가치 실현 및 공공의 이익에 부합하는 시민성 함양에 기여하도록 AI를 활용한다.<br>2. 다양성 (Diversity) : 획일화가 아닌 사회 다양한 가치가 공유될 수 있는 방향으로 AI를 활용한다.<br>3. 포용성 (Inclusion) : 대학 공동체 구성원 및 미래세대, 다양한 사회 집단 간의 연대, 공감, 소통을 추구한다.</p>
+<p>③ AI는 대학 교육의 목표 실현에 필요한 도구라는 목적과 의도에 부합되게 다음 각 호의 사항을 준수해 개발 및 활용되어야 하며 그 과정도 윤리적이어야 한다.</p>
+<p>1. 책무성 (Accountability) : 인간의 기여와 책임소재를 명확히 하고, 학문적 진실성을 추구한다.<br>2. 독창성 (Ingenuity) : 미래의 변화를 선도할 수 있는 혁신적이고 창의적인 해결 능력을 함양한다.<br>3. 형평성 (Equity) : 다양한 학습 수요에 효과적으로 대응하며 개인의 차이를 극복할 수 있는 AI 교육 환경을 제공한다.<br>4. 안전성 (Safety) : AI 활용에 있어 잠재적 위험을 방지하고 안전을 보장할 수 있도록 교육 행정 지원 과정에서 노력한다.</p>
+<p><b>제5조(교육)</b></p>
+<p>① 구성원은 AI 개발 또는 활용 시 제3조에 정한 원칙 및 핵심요건을 준수하여야 한다.<br>② 교수진은 교육 및 평가 시 이 행동강령 및 관련 지침에 따라 사전에 AI 사용에 대한 허용 여부 및 허용 범위를 안내하여야 한다.<br>③ 학생은 이 행동강령 및 교수진의 지도를 따라 AI를 개발 또는 활용하여야 한다. 시험 및 과제를 수행할 때 교수진이 허용하지 않은 범위에서 AI를 무단으로 사용하는 것은 대학 규정에 따라 부정행위 및 표절로 간주될 수 있다.</p>
+</div></div></section>
+
+  <footer><dl>
+   <div class="row"><dt>발행일</dt><dd>2026.10.30</dd></div>
+   <div class="row"><dt>관리 부서</dt><dd>숙명여자대학교 교수학습센터</dd></div>
+  </dl></footer>
+ </main>
+</div>
+<button id="toTop" type="button" aria-label="맨 위로">↑</button>
+<div id="toast" role="status">복사되었습니다</div>
+<script>
+(function(){
+ var root=document.documentElement;
+ function $(i){return document.getElementById(i)}
+ // theme
+ function isDark(){var t=root.getAttribute('data-theme');return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches}
+ try{var st=localStorage.getItem('theme');if(st==='dark'||st==='light')root.setAttribute('data-theme',st)}catch(e){}
+ function applyTheme(){var d=isDark();$('themeIcon').textContent=d?'☀️':'🌙';$('themeLbl').textContent=d?' 라이트모드':' 다크모드'}
+ $('themeBtn').addEventListener('click',function(){var n=isDark()?'light':'dark';root.setAttribute('data-theme',n);try{localStorage.setItem('theme',n)}catch(e){}applyTheme()});
+ applyTheme();
+ // TOC
+ var secs=[].slice.call(document.querySelectorAll('.sec')),html='',items=[];
+ secs.forEach(function(s){
+  var t=s.querySelector('h2').textContent.replace(/^▣\s*/,'');
+  html+='<a class="tl t0" href="#'+s.id+'" data-id="'+s.id+'">'+t+'</a>';items.push(s.id);
+  s.querySelectorAll('h3[id],h4[id]').forEach(function(h){html+='<a class="tl '+(h.tagName==='H3'?'t1':'t2')+'" href="#'+h.id+'" data-id="'+h.id+'">'+h.textContent+'</a>';items.push(h.id)});
+ });
+ var toc=$('toc'),mtoc=$('mtoc'),mb=$('menuBtn');
+ toc.innerHTML='<div class="tg ser">목차</div>'+html;mtoc.innerHTML=html;
+ mb.addEventListener('click',function(){var o=mtoc.classList.toggle('open');mb.setAttribute('aria-expanded',String(o))});
+ mtoc.addEventListener('click',function(e){if(e.target.closest('a')){mtoc.classList.remove('open');mb.setAttribute('aria-expanded','false')}});
+ // collapse
+ var CH='<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+ function bodyOf(s){return s.querySelector(':scope > .sb')}
+ function isOpen(s){return !bodyOf(s).classList.contains('hidden')}
+ function setOpen(s,o){bodyOf(s).classList.toggle('hidden',!o);s.querySelector('h2').setAttribute('aria-expanded',String(o))}
+ secs.forEach(function(s){var h=s.querySelector('h2');h.className='sh';h.setAttribute('role','button');h.tabIndex=0;h.setAttribute('aria-expanded','true');h.insertAdjacentHTML('beforeend',CH);
+  h.addEventListener('click',function(){setOpen(s,!isOpen(s))});
+  h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();setOpen(s,!isOpen(s))}})});
+ $('expandAll').addEventListener('click',function(){secs.forEach(function(s){setOpen(s,true)})});
+ $('collapseAll').addEventListener('click',function(){secs.forEach(function(s){setOpen(s,false)})});
+ // anchors
+ document.addEventListener('click',function(e){
+  var a=e.target.closest('a[href^="#"]');if(!a)return;var id=a.getAttribute('href').slice(1);
+  var t=id==='top'?document.body:document.getElementById(id);if(!t)return;e.preventDefault();
+  var s=t.closest&&t.closest('.sec');if(s){s.classList.remove('hidden');setOpen(s,true)}
+  if(id==='top')scrollTo({top:0,behavior:'smooth'});else t.scrollIntoView({behavior:'smooth',block:'start'});
+  try{history.replaceState(null,'','#'+id)}catch(err){}});
+ // scroll spy
+ var els=items.map(function(i){return $(i)}),links=[].slice.call(document.querySelectorAll('.tl')),bar=$('progress'),tt=$('toTop');
+ function onScroll(){
+  var d=document.documentElement,max=d.scrollHeight-d.clientHeight;bar.style.width=(max>0?d.scrollTop/max*100:0)+'%';
+  tt.classList.toggle('on',d.scrollTop>=500);
+  var cur=items[0];for(var i=0;i<els.length;i++){if(els[i].offsetParent!==null&&els[i].getBoundingClientRect().top<120)cur=items[i]}
+  links.forEach(function(l){var on=l.dataset.id===cur;l.classList.toggle('active',on);
+   if(on&&l.closest('#toc')){var r=l.getBoundingClientRect(),c=toc.getBoundingClientRect();if(r.top<c.top||r.bottom>c.bottom)toc.scrollTop+=r.top-c.top-c.height/2}})}
+ addEventListener('scroll',onScroll,{passive:true});onScroll();
+ tt.addEventListener('click',function(){scrollTo({top:0,behavior:'smooth'})});
+ // search
+ var q=$('q'),info=$('info'),sn=$('searchNav'),empty=$('empty'),marks=[],cur=-1,saved=null,timer;
+ function unmark(){[].slice.call(document.querySelectorAll('mark.hl')).forEach(function(m){var p=m.parentNode;p.replaceChild(document.createTextNode(m.textContent),m);p.normalize()})}
+ function highlight(r,re){
+  var w=document.createTreeWalker(r,NodeFilter.SHOW_TEXT,{acceptNode:function(n){return n.parentNode.closest('.cp,script,style')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT}});
+  var ns=[],n,c=0;while((n=w.nextNode()))ns.push(n);
+  ns.forEach(function(t){var s=t.nodeValue;re.lastIndex=0;if(!re.test(s))return;re.lastIndex=0;
+   var f=document.createDocumentFragment(),last=0,m;
+   while((m=re.exec(s))){f.appendChild(document.createTextNode(s.slice(last,m.index)));var k=document.createElement('mark');k.className='hl';k.textContent=m[0];f.appendChild(k);last=m.index+m[0].length;c++;if(!m[0].length)re.lastIndex++}
+   f.appendChild(document.createTextNode(s.slice(last)));t.parentNode.replaceChild(f,t)});
+  return c}
+ function focusHit(i){
+  if(!marks.length)return;if(cur>=0&&marks[cur])marks[cur].classList.remove('cur');
+  cur=(i+marks.length)%marks.length;var m=marks[cur];m.classList.add('cur');
+  var s=m.closest('.sec');if(s)setOpen(s,true);
+  m.scrollIntoView({behavior:'smooth',block:'center'});info.textContent=(cur+1)+' / '+marks.length+'건'}
+ function restore(){secs.forEach(function(s,i){s.classList.remove('hidden');if(saved)setOpen(s,saved[i])});saved=null;links.forEach(function(l){l.style.opacity=''})}
+ function search(){
+  unmark();marks=[];cur=-1;var v=q.value.trim();
+  if(!v){restore();sn.classList.remove('on');empty.style.display='none';return}
+  if(!saved)saved=secs.map(isOpen);
+  var re=new RegExp(v.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),total=0,shown=0;
+  secs.forEach(function(s){var c=highlight(s,re);total+=c;s.classList.toggle('hidden',c===0);if(c>0){setOpen(s,true);shown++}
+   links.forEach(function(l){if(l.dataset.id===s.id||s.querySelector('[id="'+l.dataset.id+'"]'))l.style.opacity=c===0?'.4':''})});
+  sn.classList.add('on');empty.style.display=total>0?'none':'block';
+  marks=[].slice.call(document.querySelectorAll('mark.hl'));
+  if(total){info.textContent='총 '+total+'건 · '+shown+'개 섹션';focusHit(0)}else info.textContent='0건'}
+ q.addEventListener('input',function(){clearTimeout(timer);timer=setTimeout(search,200)});
+ q.addEventListener('keydown',function(e){
+  if(e.key==='Enter'){e.preventDefault();clearTimeout(timer);if(!marks.length)search();else focusHit(cur+(e.shiftKey?-1:1))}
+  else if(e.key==='Escape'){q.value='';search();q.blur()}});
+ $('nextHit').addEventListener('click',function(){focusHit(cur+1)});
+ $('prevHit').addEventListener('click',function(){focusHit(cur-1)});
+ $('clearQ').addEventListener('click',function(){q.value='';search();q.focus()});
+ document.addEventListener('keydown',function(e){
+  var typing=/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName);
+  if((e.key==='/'&&!typing)||((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k')){e.preventDefault();q.focus();q.select()}});
+ // copy
+ var toast=$('toast'),tm;
+ function showToast(m){toast.textContent=m;toast.classList.add('on');clearTimeout(tm);tm=setTimeout(function(){toast.classList.remove('on')},1800)}
+ function fallback(t){var a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}document.body.removeChild(a);return ok}
+ function textOf(el){var c=el.cloneNode(true);[].slice.call(c.querySelectorAll('br')).forEach(function(b){b.replaceWith('\n')});[].slice.call(c.querySelectorAll('p')).forEach(function(p){p.append('\n')});return c.textContent.replace(/\n+$/,'').replace(/<\/?mark[^>]*>/g,'')}
+ document.addEventListener('click',function(e){
+  var b=e.target.closest('.cp');if(!b)return;
+  var box=b.closest('.ex,.cpr'),ct=box&&box.querySelector('.ct');if(!ct)return;var text=textOf(ct);
+  function done(ok){if(ok){b.textContent='복사됨 ✓';showToast('복사되었습니다');setTimeout(function(){b.textContent='복사'},1500)}else showToast('복사에 실패했습니다. 직접 선택해 복사해 주세요.')}
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(function(){done(true)},function(){done(fallback(text))})}else done(fallback(text));
+ });
+})();
+</script>
+</body>
+</html>
